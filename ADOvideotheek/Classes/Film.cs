@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace ADOvideotheek
 {
-    public class Film
+    public class Film: INotifyPropertyChanged
     {
         public Film(int bandnr, string titel, Filmgenre genre, int invoorraad, int uitvoorraad, decimal prijs, int totaalverhuurd)
         {
@@ -18,6 +19,7 @@ namespace ADOvideotheek
             Prijs = prijs;
             TotaalVerhuurd = totaalverhuurd;
             Changed = false;
+            IsNewItem = false;
         }
 
         private int bandNrValue;
@@ -25,6 +27,7 @@ namespace ADOvideotheek
         public int BandNr
         {
             get { return bandNrValue; }
+            internal set { bandNrValue = value;  }
         }
 
         private string titelValue;
@@ -48,7 +51,7 @@ namespace ADOvideotheek
         public int InVoorraad
         {
             get { return inVoorraadValue; }
-            set { inVoorraadValue = value; Changed = true; }
+            set { inVoorraadValue = value; Changed = true; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("InVoorraad")); }
         }
 
         private int uitVoorraadValue;
@@ -56,7 +59,7 @@ namespace ADOvideotheek
         public int UitVoorraad
         {
             get { return uitVoorraadValue; }
-            set { uitVoorraadValue = value; Changed = true; }
+            set { uitVoorraadValue = value; Changed = true; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("UitVoorraad")); }
         }
 
         private decimal prijsValue;
@@ -69,12 +72,16 @@ namespace ADOvideotheek
 
         private int totaalVerhuurdValue;
 
+        public event PropertyChangedEventHandler PropertyChanged;
+
         public int TotaalVerhuurd
         {
             get { return totaalVerhuurdValue; }
-            set { totaalVerhuurdValue = value; Changed = true; }
+            set { totaalVerhuurdValue = value; Changed = true; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("TotaalVerhuurd")); }
         }
 
         public bool Changed { get; set; }
+
+        public bool IsNewItem { get; set; }
     }
 }

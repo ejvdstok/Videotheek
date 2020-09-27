@@ -85,6 +85,7 @@ namespace ADOvideotheek
                 "", new Filmgenre(1, "bad"),
                 0, 0, 0m, 0
           );
+            film.IsNewItem = true;
             this.films.Add(film);
             return films.Count - 1;
         } 
@@ -134,6 +135,111 @@ namespace ADOvideotheek
                     return Convert.ToInt32(bandnr);
                 }
 
+            }
+        }
+
+        public void Synchronize()
+        {
+            using (var conn = new FilmDbManager().GetConnection())
+            {
+                conn.Open();
+                using (var txn = conn.BeginTransaction())
+                {
+                    foreach (var film in films)
+                    {
+                        if (film.IsNewItem)
+                        {
+                            var cmd = conn.CreateCommand();
+                            cmd.Transaction = txn;
+                            cmd.CommandText = "INSERT INTO films (Titel,GenreNr,InVoorraad, UitVoorraad, Prijs, TotaalVerhuurd) OUTPUT INSERTED.BandNr VALUES (@Titel,@GenreNr,@InVoorraad,@UitVoorraad,@Prijs,@TotaalVerhuurd) ";
+
+                            var parTitel = cmd.CreateParameter();
+                            parTitel.ParameterName = "@Titel";
+                            parTitel.Value = film.Titel;
+                            cmd.Parameters.Add(parTitel);
+
+                            var parGen = cmd.CreateParameter();
+                            parGen.ParameterName = "@GenreNr";
+                            parGen.Value = film.Genre.GenreNr;
+                            cmd.Parameters.Add(parGen);
+
+                            var parIn = cmd.CreateParameter();
+                            parIn.ParameterName = "@InVoorraad";
+                            parIn.Value = film.InVoorraad;
+                            cmd.Parameters.Add(parIn);
+
+                            var parUit = cmd.CreateParameter();
+                            parUit.ParameterName = "@UitVoorraad";
+                            parUit.Value = film.UitVoorraad;
+                            cmd.Parameters.Add(parUit);
+
+                            var parPrijs = cmd.CreateParameter();
+                            parPrijs.ParameterName = "@Prijs";
+                            parPrijs.Value = film.Prijs;
+                            cmd.Parameters.Add(parPrijs);
+
+                            var parTotaal = cmd.CreateParameter();
+                            parTotaal.ParameterName = "@TotaalVerhuurd";
+                            parTotaal.Value = film.TotaalVerhuurd;
+                            cmd.Parameters.Add(parTotaal);
+
+                            film.Changed = false;
+                            film.IsNewItem = false;
+                            film.BandNr = (int)cmd.ExecuteScalar();
+                        }
+                        else if (film.Changed)
+                        {
+                            var cmd = conn.CreateCommand();
+                            cmd.Transaction = txn;
+                            cmd.CommandText = "UPDATE films SET" +
+                                " Titel = @Titel," +
+                                " GenreNr = @GenreNr," +
+                                " InVoorraad = @InVoorraad," +
+                                " UitVoorraad = @UitVoorraad," +
+                                " Prijs = @Prijs," +
+                                " TotaalVerhuurd = @TotaalVerhuurd" +
+                                " where BandNr=@BandNr";
+                            var parTitel = cmd.CreateParameter();
+                            parTitel.ParameterName = "@Titel";
+                            parTitel.Value = film.Titel;
+                            cmd.Parameters.Add(parTitel);
+
+                            var parGen = cmd.CreateParameter();
+                            parGen.ParameterName = "@GenreNr";
+                            parGen.Value = film.Genre.GenreNr;
+                            cmd.Parameters.Add(parGen);
+
+                            var parIn = cmd.CreateParameter();
+                            parIn.ParameterName = "@InVoorraad";
+                            parIn.Value = film.InVoorraad;
+                            cmd.Parameters.Add(parIn);
+
+                            var parUit = cmd.CreateParameter();
+                            parUit.ParameterName = "@UitVoorraad";
+                            parUit.Value = film.UitVoorraad;
+                            cmd.Parameters.Add(parUit);
+
+                            var parPrijs = cmd.CreateParameter();
+                            parPrijs.ParameterName = "@Prijs";
+                            parPrijs.Value = film.Prijs;
+                            cmd.Parameters.Add(parPrijs);
+
+                            var parTotaal = cmd.CreateParameter();
+                            parTotaal.ParameterName = "@TotaalVerhuurd";
+                            parTotaal.Value = film.TotaalVerhuurd;
+                            cmd.Parameters.Add(parTotaal);
+
+                            var parBandNr = cmd.CreateParameter();
+                            parBandNr.ParameterName = "@BandNr";
+                            parBandNr.Value = film.BandNr;
+                            cmd.Parameters.Add(parBandNr);
+
+                            cmd.ExecuteNonQuery();
+                            film.Changed = false;
+                        }
+                    }
+                    txn.Commit();
+                }
             }
         }
     }

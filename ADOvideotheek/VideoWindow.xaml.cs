@@ -74,6 +74,7 @@ namespace ADOvideotheek
                 comboBoxGenres.SelectedValue = selectedMovie.Genre.GenreNr;
             }
             buttonVerwijderen.IsEnabled = true;
+            buttonOpslaan.IsEnabled = true;
             buttonToevoegen.Content = "Toevoegen";
             buttonVerwijderen.Content = "Verwijderen";
             listBoxFilms.IsEnabled = true;
@@ -143,46 +144,46 @@ namespace ADOvideotheek
             if (buttonVerwijderen.Content == "Verwijderen")
             {
                 if(MessageBox.Show("Weet u zeker dat u deze film wilt verwijderen?", "Verwijderen",
-                    MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-                { 
+                    MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
+                {
+                    return;
                 }
             }
 
-            else if (buttonVerwijderen.Content == "Annuleren")
-            {
-                var films = filmManager.GetFilms();
-                films.Remove(listBoxFilms.SelectedItem as Film);
-                listBoxFilms.SelectedIndex = 0;
-                ExitEditingMode();
-            }
+            var films = filmManager.GetFilms();
+            films.Remove(listBoxFilms.SelectedItem as Film);
+            listBoxFilms.SelectedIndex = 0;
+            ExitEditingMode();
         }
  //OPSLAAN
 
         private void Opslaan_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                var f = listBoxFilms.SelectedItem as Film;
-                new FilmManager().ToevoegFilm(f);
-
-                f.Changed = false;
-                Films.Add(f);
-                FilmViewSource.View.SortDescriptions.Add(new SortDescription("Titel",
-                    ListSortDirection.Ascending));
-                FilmViewSource.View.Refresh();
-                FilmViewSource.View.MoveCurrentTo(f);
-                listBoxFilms.ScrollIntoView(listBoxFilms.SelectedItem);
+            //try
+           // {
+                filmManager.Synchronize();
                 ExitEditingMode();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Opslaan mislukt : " + ex.Message);
-            }
+            //}
+            //catch (Exception ex)
+           // {
+           //     MessageBox.Show("Opslaan mislukt : " + ex.Message);
+            //}
         }
  //VERHUUR
         private void Verhuur_Click(object sender, RoutedEventArgs e)
         {
-            //if voorraad >0 -1 +1 +1
+            var films = filmManager.GetFilms();
+            var film = (listBoxFilms.SelectedItem as Film);
+            if (film.InVoorraad == 0)
+            { MessageBox.Show("Alle films zijn verhuurd");
+                return;
+            }
+            else
+            {
+                film.InVoorraad -= 1;
+                film.UitVoorraad += 1;
+                film.TotaalVerhuurd += 1;
+            }
         }
 //VENSTER SLUITEN
         /*private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) 
