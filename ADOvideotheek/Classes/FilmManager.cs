@@ -11,9 +11,16 @@ namespace ADOvideotheek
 {
     public class FilmManager
     {
+
+        private List<Film> films;
         public List<Film> GetFilms()
         {
-            List<Film> films = new List<Film>();
+            if (films != null)
+            {
+                return films;
+            }
+            
+            films = new List<Film>();
             using (var conVideo = new VideoManager().GetConnection())
             {
                 using (var comGetFilms = conVideo.CreateCommand())
@@ -70,6 +77,16 @@ namespace ADOvideotheek
             }
         }
 
+        public int MaakNieuweFilm()
+        {
+            Film film = new Film(
+                -1, // This wont work to add it to the database, but good enough for now
+                "", new Filmgenre(1, "bad"),
+                0, 0, 0m, 0
+          );
+            this.films.Add(film);
+            return films.Count - 1;
+        }
         public int ToevoegFilm(Film film)
         {
             using (var conVideo = new FilmDbManager().GetConnection())

@@ -24,6 +24,7 @@ namespace ADOvideotheek
     public partial class VideoWindow : Window
     {
         private CollectionViewSource FilmViewSource;
+        private FilmManager filmManager;
         public ObservableCollection<Film> Films;
         public List<Filmgenre> Genres;
 
@@ -41,7 +42,7 @@ namespace ADOvideotheek
         {
             FilmViewSource =
                 ((CollectionViewSource)(this.FindResource("filmViewSource")));
-            var filmManager = new FilmManager();
+            filmManager = new FilmManager();
             var genreManager = new GenreManager();
 
             List<Film> Films = filmManager.GetFilms();
@@ -102,11 +103,11 @@ namespace ADOvideotheek
             if (buttonToevoegen.Content == "Toevoegen")
             {
                 SetFieldWritability(true);
-                listBoxFilms.SelectedIndex = -1;
+                listBoxFilms.SelectedIndex = filmManager.MaakNieuweFilm();
                 buttonVerwijderen.IsEnabled = true;
                 buttonOpslaan.IsEnabled = false;
                 listBoxFilms.IsEnabled = false;
-                comboBoxGenres.IsEnabled = false;
+                comboBoxGenres.IsEnabled = true;
                 comboBoxGenres.SelectedIndex = 0;
                 buttonToevoegen.Content = "Bevestigen";
                 buttonVerwijderen.Content = "Annuleren";
