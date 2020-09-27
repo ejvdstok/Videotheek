@@ -160,11 +160,12 @@ namespace ADOvideotheek
 
         private void Opslaan_Click(object sender, RoutedEventArgs e)
         {
-            //try
-           // {
+            if (MessageBox.Show("Wilt u alles wegschrijven naar de database ?", "Opslaan", MessageBoxButton.YesNo,
+                       MessageBoxImage.Question, MessageBoxResult.Yes) == MessageBoxResult.Yes)
+            { 
                 filmManager.Synchronize();
                 ExitEditingMode();
-            //}
+            }
             //catch (Exception ex)
            // {
            //     MessageBox.Show("Opslaan mislukt : " + ex.Message);
@@ -176,7 +177,7 @@ namespace ADOvideotheek
             var films = filmManager.GetFilms();
             var film = (listBoxFilms.SelectedItem as Film);
             if (film.InVoorraad == 0)
-            { MessageBox.Show("Alle films zijn verhuurd");
+            { MessageBox.Show("Alle films zijn verhuurd", "Verhuur", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             else
