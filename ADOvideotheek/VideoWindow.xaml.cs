@@ -55,19 +55,18 @@ namespace ADOvideotheek
             comboBoxGenres.SelectedValuePath = "GenreNr";
             comboBoxGenres.IsEnabled = false;
 
-            Update();
+            ExitEditingMode();
         }
 
         private void SetFieldWritability(bool writable)
         {
             comboBoxGenres.IsReadOnly = !writable;
             titelTextBox.IsReadOnly = !writable;
-            titelTextBox.GetBindingExpression(TextBox.TextProperty).UpdateSource();
             prijsTextBox.IsReadOnly = !writable;
             inVooraadTextBox.IsReadOnly = !writable;
 
         }
-        private void Update()
+        private void ExitEditingMode()
         {
             Film selectedMovie = (Film)FilmViewSource.View.CurrentItem;
             if (selectedMovie != null)
@@ -114,14 +113,34 @@ namespace ADOvideotheek
             }
             else if (buttonToevoegen.Content == "Bevestigen")
             {
+                bool hasErrors = false;
                 // voeg shit toe aan lijst
-                Update();
+
+                hasErrors = hasErrors || CheckValidation(titelTextBox.GetBindingExpression(TextBox.TextProperty));
+                hasErrors = hasErrors || CheckValidation(inVooraadTextBox.GetBindingExpression(TextBox.TextProperty));
+                hasErrors = hasErrors || CheckValidation(prijsTextBox.GetBindingExpression(TextBox.TextProperty));
+
+                if (hasErrors)
+                {
+                    MessageBox.Show("Ya fucked everything up, dumbass.");
+                } else
+                {
+                    SetFieldWritability(false);
+                    ExitEditingMode();
+                }
             }
         } 
+
+        private static bool CheckValidation(BindingExpression expr)
+        {
+            expr.UpdateSource();
+            return expr.HasValidationError;
+        }
+
 //VERWIJDEREN EN ANNULEREN
         private void Verwijderen_Click(object sender, RoutedEventArgs e)
         {
-            if (buttonToevoegen.Content == "Verwijderen")
+            if (buttonVerwijderen.Content == "Verwijderen")
             {
                 if(MessageBox.Show("Weet u zeker dat u deze film wilt verwijderen?", "Verwijderen",
                     MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
@@ -129,11 +148,12 @@ namespace ADOvideotheek
                 }
             }
 
-            else if (buttonToevoegen.Content == "Annuleren")
+            else if (buttonVerwijderen.Content == "Annuleren")
             {
-                Update();
-                var f = listBoxFilms.SelectedItem as Film;
-                comboBoxGenres.SelectedItem = f.Genre;
+                var films = filmManager.GetFilms();
+                films.Remove(listBoxFilms.SelectedItem as Film);
+                listBoxFilms.SelectedIndex = 0;
+                ExitEditingMode();
             }
         }
  //OPSLAAN
@@ -152,7 +172,7 @@ namespace ADOvideotheek
                 FilmViewSource.View.Refresh();
                 FilmViewSource.View.MoveCurrentTo(f);
                 listBoxFilms.ScrollIntoView(listBoxFilms.SelectedItem);
-                Update();
+                ExitEditingMode();
             }
             catch (Exception ex)
             {
