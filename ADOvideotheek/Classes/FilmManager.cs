@@ -12,7 +12,7 @@ namespace ADOvideotheek
 {
     public class FilmManager
     {
-
+        private List<int> RemovedFilms = new List<int>();
         private ObservableCollection<Film> films;
         public Collection<Film> GetFilms()
         {
@@ -61,19 +61,11 @@ namespace ADOvideotheek
 
         public void VerwijderFilm(int bandnr)
         {
+            RemovedFilms.Add(bandnr);
             using (var conVideo = new FilmDbManager().GetConnection())
             {
                 using (var comDelete = conVideo.CreateCommand())
                 {
-                    comDelete.CommandType = CommandType.Text;
-                    comDelete.CommandText = "delete from Films where BandNr=@bandnr";
-                    var parBandNr = comDelete.CreateParameter();
-                    parBandNr.ParameterName = "@bandnr";
-                    parBandNr.Value = bandnr;
-                    comDelete.Parameters.Add(parBandNr);
-                    conVideo.Open();
-                    if (comDelete.ExecuteNonQuery() == 0)
-                        throw new System.Exception("Verwijderen mislukt");
                 }
             }
         }
@@ -238,6 +230,21 @@ namespace ADOvideotheek
                             film.Changed = false;
                         }
                     }
+                    foreach (var film in RemovedFilms)
+                    {
+                        var cmd = conn.CreateCommand();
+                        cmd.Transaction = txn;
+                        cmd.CommandType = CommandType.Text;
+                        cmd.CommandText = "delete from Films where BandNr=@bandnr";
+                        var parBandNr = cmd.CreateParameter();
+                        parBandNr.ParameterName = "@bandnr";
+                        parBandNr.Value = film;
+                        cmd.Parameters.Add(parBandNr);
+                        if (cmd.ExecuteNonQuery() == 0)
+                            throw new System.Exception("Verwijderen mislukt");
+
+                    }
+                    RemovedFilms.Clear();
                     txn.Commit();
                 }
             }

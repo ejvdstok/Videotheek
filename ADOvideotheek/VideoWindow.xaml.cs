@@ -148,6 +148,7 @@ namespace ADOvideotheek
                 {
                     return;
                 }
+                filmManager.VerwijderFilm((listBoxFilms.SelectedItem as Film).BandNr);
             }
 
             var films = filmManager.GetFilms();
