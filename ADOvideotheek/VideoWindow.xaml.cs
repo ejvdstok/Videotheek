@@ -45,7 +45,7 @@ namespace ADOvideotheek
             filmManager = new FilmManager();
             var genreManager = new GenreManager();
 
-            List<Film> Films = filmManager.GetFilms();
+            var Films = filmManager.GetFilms();
             FilmViewSource.Source = Films;
             //Films.CollectionChanged += this.OnCollectionChanged;
 
@@ -62,10 +62,10 @@ namespace ADOvideotheek
         {
             comboBoxGenres.IsReadOnly = !writable;
             titelTextBox.IsReadOnly = !writable;
+            titelTextBox.GetBindingExpression(TextBox.TextProperty).UpdateSource();
             prijsTextBox.IsReadOnly = !writable;
             inVooraadTextBox.IsReadOnly = !writable;
-            totaalVerhuurdTextBox.IsReadOnly = !writable;
-            uitgeleendTextBox.IsReadOnly = !writable;
+
         }
         private void Update()
         {

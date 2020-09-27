@@ -28,7 +28,7 @@ namespace ADOvideotheek
                 }
             }
 
-            if (getal <= 0 || prijs <= 0)
+            if (getal <= 0 && prijs <= 0)
             {
                 return new ValidationResult(false, "Waarde moet groter zijn dan 0");
             }

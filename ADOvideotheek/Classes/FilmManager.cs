@@ -6,21 +6,22 @@ using System.Threading.Tasks;
 using System.Data.Common;
 using System.Configuration;
 using System.Data;
+using System.Collections.ObjectModel;
 
 namespace ADOvideotheek
 {
     public class FilmManager
     {
 
-        private List<Film> films;
-        public List<Film> GetFilms()
+        private ObservableCollection<Film> films;
+        public Collection<Film> GetFilms()
         {
             if (films != null)
             {
                 return films;
             }
-            
-            films = new List<Film>();
+
+            films = new ObservableCollection<Film>();
             using (var conVideo = new VideoManager().GetConnection())
             {
                 using (var comGetFilms = conVideo.CreateCommand())
@@ -86,7 +87,7 @@ namespace ADOvideotheek
           );
             this.films.Add(film);
             return films.Count - 1;
-        }
+        } 
         public int ToevoegFilm(Film film)
         {
             using (var conVideo = new FilmDbManager().GetConnection())
