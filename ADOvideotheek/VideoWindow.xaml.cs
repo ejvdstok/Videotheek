@@ -185,78 +185,15 @@ namespace ADOvideotheek
                 film.TotaalVerhuurd += 1;
             }
         }
-//VENSTER SLUITEN
-        /*private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) 
-         * {     
-         * if (MessageBox.Show("Wilt u alles wegschrijven naar de database ?", "Opslaan", MessageBoxButton.YesNo, 
-         * MessageBoxImage.Question, MessageBoxResult.Yes) == MessageBoxResult.Yes)     
-         * 
-         * {         
-         * leverancierDataGrid.CommitEdit(DataGridEditingUnit.Row, true);         
-         * var manager = new FilmDbManager();         
-         * List<Film> resultaatFilms = new List<Film>();         
-         * StringBuilder nietgoed = new StringBuilder();         
-         * StringBuilder welgoed = new StringBuilder(); 
- 
-        if (OudeFilms.Count > 0)         
-        {             
-        resultaatFilms = manager.SchrijfVerwijderingen(OudeFilms);             
-        if (resultaatFilm.Count > 0)             
-        {  
-                foreach (var l in resultaatFilms)                 
-        {                     
-        nietgoed.Append("Niet verwijderd: " + l.LevNr + " : " + l.Naam + " niet\n");                
-        }             
-        }             
-        welgoed.Append(OudeLeveranciers.Count - resultaatLevs.Count + " leverancier(s) verwijderd in de database\n");         
-        } 
- 
-        resultaatFilms.Clear();         
-        if (NieuweFilms.Count > 0)         
-        {             
-        resultaatLevs = manager.SchrijfToevoegingen(NieuweFilms);             
-        if (resultaatLevs.Count > 0)             
-        {                 
-        foreach (var l in resultaatLevs)                 
-        {                     
-        nietgoed.Append("Niet toegevoegd: " + l.LevNr + " : " + l.Naam + " niet\n");                 
-        }             
-        }             
-        welgoed.Append(NieuweLeveranciers.Count - resultaatLevs.Count + " leverancier(s) toegevoegd aan de database\n");        
-        } 
- 
-        foreach (Leverancier l in leveranciersOb)         
-        {             
-        if ((l.Changed == true) && (l.LevNr != 0))             
-        {                 
-        GewijzigdeLeveranciers.Add(l);                 
-        l.Changed = false;             
-        }         
-        } 
- 
-        resultaatFilms.Clear();         
-        if (GewijzigdeLeveranciers.Count > 0)         
-        {             
-        resultaatFilms = manager.SchrijfWijzigingen(GewijzigdeFilms);             
-        if (resultaatFilms.Count > 0)             
-        {                 
-        foreach (var l in resultaatLevs)                 
-        {                    
-        nietgoed.Append("Niet gewijzigd: " + l.BandNr + " : " + l.Naam +                     " niet\n");
-        }             
-        }             
-        welgoed.Append(GewijzigdeLeveranciers.Count - resultaatLevs.Count +                  " film(s) gewijzigd in de database\n");         
-        } 
- 
-        MessageBox.Show(nietgoed.ToString() + "\n\n" + welgoed.ToString(), "Info", MessageBoxButton.OK); 
- 
-        OudeFilms.Clear();         
-        NieuweFilms.Clear();         
-        GewijzigdeFilms.Clear(); 
- 
-        System.Windows.Data.CollectionViewSource leverancierViewSource = ((System.Windows.Data.CollectionViewSource)             
-        (this.FindResource("leverancierViewSource")));         
-        leveranciersOb = manager.GetLeveranciers();         
-        leverancierViewSource.Source = leveranciersOb;     } */
+
+        //VENSTER SLUITEN
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (MessageBox.Show("Wilt u alles wegschrijven naar de database ?", "Opslaan", MessageBoxButton.YesNo,
+                    MessageBoxImage.Question, MessageBoxResult.Yes) == MessageBoxResult.Yes)
+            {
+                filmManager.Synchronize();
+            }
+        }
     }
 }

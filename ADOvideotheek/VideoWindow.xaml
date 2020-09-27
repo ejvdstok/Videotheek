@@ -8,6 +8,7 @@
 	        Title="Videotheek" Height="550" Width="520"
 	        Background="LightBlue" WindowStartupLocation="CenterScreen"
 	        Loaded="Window_Loaded"
+        Closing="Window_Closing"
            xmlns:glob="clr-namespace:System.Globalization;assembly=mscorlib">
 
 
