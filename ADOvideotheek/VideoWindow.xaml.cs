@@ -53,14 +53,25 @@ namespace ADOvideotheek
             comboBoxGenres.DisplayMemberPath = "GenreNaam";
             comboBoxGenres.SelectedValuePath = "GenreNr";
             comboBoxGenres.IsEnabled = false;
+
             Update();
+        }
+
+        private void SetFieldWritability(bool writable)
+        {
+            comboBoxGenres.IsReadOnly = !writable;
+            titelTextBox.IsReadOnly = !writable;
+            prijsTextBox.IsReadOnly = !writable;
+            inVooraadTextBox.IsReadOnly = !writable;
+            totaalVerhuurdTextBox.IsReadOnly = !writable;
+            uitgeleendTextBox.IsReadOnly = !writable;
         }
         private void Update()
         {
             Film selectedMovie = (Film)FilmViewSource.View.CurrentItem;
             if (selectedMovie != null)
             {
-                comboBoxGenres.SelectedValue = selectedMovie.Genre.GenreNaam;
+                comboBoxGenres.SelectedValue = selectedMovie.Genre.GenreNr;
             }
             buttonVerwijderen.IsEnabled = true;
             buttonToevoegen.Content = "Toevoegen";
@@ -90,13 +101,15 @@ namespace ADOvideotheek
         {
             if (buttonToevoegen.Content == "Toevoegen")
             {
+                SetFieldWritability(true);
                 listBoxFilms.SelectedIndex = -1;
-                buttonVerwijderen.IsEnabled = false;
+                buttonVerwijderen.IsEnabled = true;
+                buttonOpslaan.IsEnabled = false;
                 listBoxFilms.IsEnabled = false;
                 comboBoxGenres.IsEnabled = false;
                 comboBoxGenres.SelectedIndex = 0;
                 buttonToevoegen.Content = "Bevestigen";
-                buttonOpslaan.Content = "Annuleren";
+                buttonVerwijderen.Content = "Annuleren";
             }
             else if (buttonToevoegen.Content == "Bevestigen")
             {
